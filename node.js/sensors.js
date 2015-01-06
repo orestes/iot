@@ -1,24 +1,25 @@
 var config = require('./config.json');
-var five = require("johnny-five");
+var five   = require("johnny-five");
 var plotly = require('plotly')(config['plotly']['username'], config['plotly']['key']);
 
-var data = [{x: [], y: [], mode: "markers", stream: {token: config['plotly']['token'], maxpoints: 20}}];
-var layout = {fileopt: "overwrite", filename: "Arduino sensor reading"};
+var data   = [{x: [], y: [], mode: "line", stream: {token: config['plotly']['token'], maxpoints: 20}}];
+var layout = {"fileopt": "overwrite", "filename": "Potentiometer #1"};
 
 board = new five.Board({port: config['port']});
 
 // circuit-specific config
-var resistor = 200;
+var resistor = 1024;
 
 // lets do this
-board.on("ready", function () {
-
+board.on("ready", function ()
+{
     var sensor = new five.Sensor({
         pin: "A0",
-        freq: 1000 // send reading every 1000ms
+        freq: 500 // send reading every 500ms
     });
 
-    plotly.plot(data, layout, function (err, res) {
+    plotly.plot(data, layout, function (err, res)
+    {
         if (err) console.log(err);
         console.log("Live plot at " + res.url);
 
@@ -27,16 +28,16 @@ board.on("ready", function () {
             console.log(res);
         });
 
-        sensor.scale([0, resistor]).on("data", function () {
+        sensor.scale([0, resistor]).on("data", function ()
+        {
+            var date = getDateString();
             data = {
-                x: getDateString(),
-                y: 0,
-                marker: {
-                    size: this.value
-                }
+                "x": date,
+                "y": this.value
             };
 
             var encoded = JSON.stringify(data) + '\n';
+            // console.log(date + ' ' + this.value);
 
             stream.write(encoded);
         });
@@ -47,9 +48,9 @@ board.on("ready", function () {
 function getDateString() {
     // Timezone vs GMT difference in hours * 3600000
     var time = new Date();
-    var str = new Date(time + config['timezone_diff']).toISOString();
-    str = str.replace(/T/, ' ');
-    str = str.replace(/Z/, '');
+    var str  = new Date(time + config['timezone_diff']).toISOString();
+        str  = str.replace(/T/, ' ');
+        str  = str.replace(/Z/, '');
 
     return str;
 }
