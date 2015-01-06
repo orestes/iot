@@ -1,0 +1,9 @@
+{
+  "port": "COM3",
+  "timezone_diff": "3600000", // GMT difference in milliseconds
+  "plotly": {
+    "username": "***",
+    "key": "***", // Get an API key from your plotly settings
+    "token": "***" // Get a stream token from your plotly settings
+  }
+}
