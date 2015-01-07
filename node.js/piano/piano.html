@@ -1,0 +1,33 @@
+<script src="http://localhost/socket.io/socket.io.js"></script>
+<script>
+    var noteMapping = {
+        65: "C3", // a
+        83: "D3", // s
+        68: "E3", // d
+        70: "F3", // f
+        71: "G3", // g
+        72: "A3", // h
+        74: "B3" // j
+    };
+
+    var socket = io('http://localhost');
+
+    document.addEventListener('keydown', function(e) {
+//        console.log(e.keyCode);
+
+        var note = getNoteFromKeyStroke(e.keyCode);
+        if (note) {
+            console.log('Playing note: ' + note);
+            socket.emit('play', {
+                "note": note,
+                "duration": 100
+            });
+        } else {
+            console.log('No note mapped to this key');
+        }
+    })
+
+    function getNoteFromKeyStroke(code) {
+        return noteMapping[code];
+    }
+</script>
